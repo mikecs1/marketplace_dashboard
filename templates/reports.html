@@ -1,0 +1,159 @@
+{% extends 'base.html' %} {% block title %}Reports — OrderBase{% endblock %} {%
+block page_title %}Reports{% endblock %} {% block content %}
+
+<!-- JOIN 1 -->
+<div class="section-header">
+  <span class="section-title">JOIN 1 — Orders & Customers</span>
+</div>
+<p
+  style="
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+  ">
+  SELECT orders.*, customers.name FROM orders JOIN customers ON
+  orders.customer_id = customers.id
+</p>
+<div class="table-card" style="margin-bottom: 36px">
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Email</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in orders_with_customers %}
+      <tr>
+        <td class="customer-id">#{{ row.order_id }}</td>
+        <td>{{ row.customer_name }}</td>
+        <td class="mono" style="font-size: 13px">{{ row.customer_email }}</td>
+        <td class="mono">{{ row.order_date }}</td>
+        <td class="price">${{ "%.2f"|format(row.total_price) }}</td>
+        <td>
+          <span class="badge badge-{{ row.status }}">{{ row.status }}</span>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="6">No data yet — add customers and orders first.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- JOIN 2 -->
+<div class="section-header">
+  <span class="section-title">JOIN 2 — Order Items Detail</span>
+</div>
+<p
+  style="
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+  ">
+  order_items JOIN orders JOIN customers JOIN products (4-table JOIN)
+</p>
+<div class="table-card" style="margin-bottom: 36px">
+  <table>
+    <thead>
+      <tr>
+        <th>Item ID</th>
+        <th>Customer</th>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Line Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in order_items_detail %}
+      <tr>
+        <td class="customer-id">#{{ row.item_id }}</td>
+        <td>{{ row.customer_name }}</td>
+        <td class="customer-id">#{{ row.order_id }}</td>
+        <td class="mono">{{ row.order_date }}</td>
+        <td>{{ row.product_name }}</td>
+        <td>{{ row.category or '—' }}</td>
+        <td class="mono">{{ row.quantity }}</td>
+        <td class="price">${{ "%.2f"|format(row.unit_price) }}</td>
+        <td class="price" style="color: var(--accent)">
+          ${{ "%.2f"|format(row.line_total) }}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="9">
+          No order items yet — add orders with products first.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- JOIN 3 -->
+<div class="section-header">
+  <span class="section-title">JOIN 3 — Product Sales Summary</span>
+</div>
+<p
+  style="
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+  ">
+  products LEFT JOIN order_items GROUP BY products.id ORDER BY total_revenue
+  DESC
+</p>
+<div class="table-card" style="margin-bottom: 36px">
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Unit Price</th>
+        <th>Stock</th>
+        <th>Times Ordered</th>
+        <th>Units Sold</th>
+        <th>Total Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in product_sales %}
+      <tr>
+        <td>{{ row.product_name }}</td>
+        <td>{{ row.category or '—' }}</td>
+        <td class="price">${{ "%.2f"|format(row.unit_price) }}</td>
+        <td>
+          <span
+            class="badge {% if row.stock == 0 %}badge-cancelled {% elif row.stock < 10 %}badge-pending {% else %}badge-completed{% endif %}">
+            {{ row.stock }}
+          </span>
+        </td>
+        <td class="mono">{{ row.times_ordered }}</td>
+        <td class="mono">{{ row.total_units_sold }}</td>
+        <td class="price" style="color: var(--success)">
+          ${{ "%.2f"|format(row.total_revenue) }}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="7">No products yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

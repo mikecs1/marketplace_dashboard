@@ -1,0 +1,658 @@
+/* =========================================
+   CHUNK 1: RESET & CSS VARIABLES
+   ========================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0e0f11;
+  --surface: #16181c;
+  --surface2: #1e2128;
+  --border: #2a2d35;
+  --accent: #e8ff47;
+  --accent2: #47c8ff;
+  --danger: #ff4d6d;
+  --success: #47ffb2;
+  --info: #47c8ff;
+  --text: #f0f0f0;
+  --muted: #6b7080;
+  --sidebar-w: 220px;
+  --radius: 10px;
+  --font-head: "Syne", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* =========================================
+   CHUNK 2: LAYOUT
+   ========================================= */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* =========================================
+   CHUNK 3: SIDEBAR
+   ========================================= */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px 28px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.brand-icon {
+  color: var(--accent);
+  font-size: 22px;
+}
+
+.nav {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--accent);
+  color: #0e0f11;
+  font-weight: 700;
+}
+
+.nav-item.active .nav-icon {
+  color: #0e0f11;
+}
+
+/* =========================================
+   CHUNK 4: MAIN CONTENT AREA
+   ========================================= */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  padding: 32px 40px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -1px;
+  flex: 1;
+}
+
+.content {
+  padding: 28px 40px 48px;
+}
+
+/* =========================================
+   CHUNK 5: FLASH MESSAGE ALERTS
+   ========================================= */
+.alerts {
+  padding: 16px 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 4px solid transparent;
+}
+
+.alert-success {
+  background: rgba(71, 255, 178, 0.08);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.alert-error {
+  background: rgba(255, 77, 109, 0.08);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.alert-info {
+  background: rgba(71, 200, 255, 0.08);
+  border-color: var(--info);
+  color: var(--info);
+}
+
+/* =========================================
+   CHUNK 6: STAT CARDS
+   ========================================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.stat-card.yellow::before {
+  background: var(--accent);
+}
+.stat-card.blue::before {
+  background: var(--accent2);
+}
+.stat-card.green::before {
+  background: var(--success);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+}
+
+.stat-value {
+  font-family: var(--font-head);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.stat-card.yellow .stat-value {
+  color: var(--accent);
+}
+.stat-card.blue .stat-value {
+  color: var(--accent2);
+}
+.stat-card.green .stat-value {
+  color: var(--success);
+}
+
+/* =========================================
+   CHUNK 7: TABLES
+   ========================================= */
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 12px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+td {
+  padding: 14px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: var(--surface2);
+}
+
+.empty-row td {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px;
+  font-style: italic;
+}
+
+/* =========================================
+   CHUNK 8: BADGES, BUTTONS, FORMS
+   ========================================= */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge-pending {
+  background: rgba(232, 255, 71, 0.12);
+  color: var(--accent);
+}
+.badge-completed {
+  background: rgba(71, 255, 178, 0.12);
+  color: var(--success);
+}
+.badge-cancelled {
+  background: rgba(255, 77, 109, 0.12);
+  color: var(--danger);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0e0f11;
+}
+.btn-primary:hover {
+  background: #d4eb30;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover {
+  background: var(--surface2);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(255, 77, 109, 0.3);
+}
+.btn-danger:hover {
+  background: rgba(255, 77, 109, 0.1);
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 560px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+  transition: border 0.15s;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+}
+select option {
+  background: var(--surface);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+/* =========================================
+   CHUNK 9: MISC UTILITIES
+   ========================================= */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.customer-id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.price {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+.mono {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: var(--accent2);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   ORDER ITEMS
+   ========================================= */
+.order-item-row {
+  display: grid;
+  grid-template-columns: 1fr 100px auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--surface2);
+}
+
+.order-item-row select,
+.order-item-row input {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.order-item-row input[type="hidden"] {
+  display: none;
+}
+
+.order-item-row .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* =========================================
+   AUTH PAGES
+   ========================================= */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-title {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.auth-form input {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232, 255, 71, 0.1);
+}
+
+.btn-full {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.auth-link {
+  color: var(--accent2);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   TOPBAR USER SECTION
+   ========================================= */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.user-email {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* =========================================
+   USER ROLE DISPLAY
+   ========================================= */
+.user-role-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.role-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.role-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.role-badge.role-admin {
+  background: rgba(255, 77, 109, 0.2);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.role-badge.role-user {
+  background: rgba(71, 200, 255, 0.2);
+  color: var(--info);
+  border: 1px solid var(--info);
+}

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if order else 'New' }} Order — OrderBase{% endblock %}
+{% block page_title %}{{ 'Edit Order' if order else 'New Order' }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width:720px;">
+  <form method="POST" id="order-form">
+
+    <!-- Customer -->
+    <div class="form-group">
+      <label>Customer</label>
+      <select name="customer_id" required>
+        <option value="">— Select a customer —</option>
+        {% for c in customers %}
+        <option value="{{ c.id }}"
+          {{ 'selected' if order and order.customer_id == c.id }}>
+          {{ c.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" name="date"
+             value="{{ order.date.strftime('%Y-%m-%d') if order else '' }}"
+             required>
+    </div>
+
+    <!-- Status -->
+    <div class="form-group">
+      <label>Status</label>
+      <select name="status">
+        <option value="pending"
+          {{ 'selected' if order and order.status == 'pending' }}>Pending</option>
+        <option value="completed"
+          {{ 'selected' if order and order.status == 'completed' }}>Completed</option>
+        <option value="cancelled"
+          {{ 'selected' if order and order.status == 'cancelled' }}>Cancelled</option>
+      </select>
+    </div>
+
+    <!-- Products Section -->
+    <div style="margin-bottom:20px;">
+      <label style="display:block; margin-bottom:12px;">Products</label>
+
+      <div id="items-container">
+        {% if order and order.items %}
+          {% for item in order.items %}
+          <div class="item-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+            <select name="product_id[]" style="flex:2;" required>
+              <option value="">— Select product —</option>
+              {% for p in products %}
+              <option value="{{ p.id }}"
+                {{ 'selected' if p.id == item.product_id }}>
+                {{ p.name }} (${{ "%.2f"|format(p.price) }})
+              </option>
+              {% endfor %}
+            </select>
+            <input type="number" name="quantity[]"
+                   value="{{ item.quantity }}"
+                   min="1" placeholder="Qty"
+                   style="flex:1;" required>
+            <button type="button" onclick="removeRow(this)"
+                    class="btn btn-danger btn-sm">✕</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <!-- Default one empty row for new orders -->
+          <div class="item-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+            <select name="product_id[]" style="flex:2;" required>
+              <option value="">— Select product —</option>
+              {% for p in products %}
+              <option value="{{ p.id }}">{{ p.name }} (${{ "%.2f"|format(p.price) }})</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="quantity[]"
+                   min="1" placeholder="Qty"
+                   style="flex:1;" required>
+            <button type="button" onclick="removeRow(this)"
+                    class="btn btn-danger btn-sm">✕</button>
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="button" onclick="addRow()"
+              class="btn btn-ghost btn-sm" style="margin-top:8px;">
+        + Add Product
+      </button>
+    </div>
+
+    <!-- Total display -->
+    <div style="background:var(--bg); border:1px solid var(--border);
+                border-radius:var(--radius); padding:16px; margin-bottom:24px;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family:var(--font-mono); font-size:12px;
+                   text-transform:uppercase; color:var(--muted);">
+        Calculated Total
+      </span>
+      <span id="total-display"
+            style="font-family:var(--font-head); font-size:24px;
+                   font-weight:800; color:var(--accent);">
+        $0.00
+      </span>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        {{ 'Save Changes' if order else 'Add Order' }}
+      </button>
+      <a href="{{ url_for('orders') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+<!-- Product data for JS -->
+<script>
+  // Build a price lookup from products passed by Flask
+  const productPrices = {
+    {% for p in products %}
+    "{{ p.id }}": {{ p.price }},
+    {% endfor %}
+  };
+
+  function getRowTemplate() {
+    return `
+      <div class="item-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+        <select name="product_id[]" style="flex:2;" onchange="updateTotal()" required>
+          <option value="">— Select product —</option>
+          {% for p in products %}
+          <option value="{{ p.id }}">{{ p.name }} (${{ "%.2f"|format(p.price) }})</option>
+          {% endfor %}
+        </select>
+        <input type="number" name="quantity[]" min="1" placeholder="Qty"
+               style="flex:1;" oninput="updateTotal()" required>
+        <button type="button" onclick="removeRow(this)"
+                class="btn btn-danger btn-sm">✕</button>
+      </div>`;
+  }
+
+  function addRow() {
+    document.getElementById('items-container').insertAdjacentHTML('beforeend', getRowTemplate());
+  }
+
+  function removeRow(btn) {
+    const rows = document.querySelectorAll('.item-row');
+    if (rows.length === 1) return; // always keep at least one row
+    btn.closest('.item-row').remove();
+    updateTotal();
+  }
+
+  function updateTotal() {
+    let total = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+      const pid = row.querySelector('select').value;
+      const qty = parseInt(row.querySelector('input').value) || 0;
+      if (pid && qty > 0) {
+        total += productPrices[pid] * qty;
+      }
+    });
+    document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+  }
+
+  // Wire up existing rows on page load (important for edit mode)
+  document.querySelectorAll('.item-row select').forEach(sel => {
+    sel.addEventListener('change', updateTotal);
+  });
+  document.querySelectorAll('.item-row input').forEach(inp => {
+    inp.addEventListener('input', updateTotal);
+  });
+
+  // Calculate total on page load if editing
+  updateTotal();
+</script>
+{% endblock %}

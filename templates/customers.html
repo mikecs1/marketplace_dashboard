@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% block title %}Customers — OrderBase{% endblock %}
+{% block page_title %}Customers{% endblock %} {% block content %}
+<div class="section-header">
+  <span class="section-title">All Customers ({{ customers|length }})</span>
+  {% if current_user.is_authenticated and current_user.is_admin() %}
+  <a href="{{ url_for('new_customer') }}" class="btn btn-primary"
+    >+ Add Customer</a
+  >
+  {% endif %}
+</div>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>#ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Orders</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td class="customer-id">#{{ c.id }}</td>
+        <td>
+          <a href="{{ url_for('customer_detail', id=c.id) }}">{{ c.name }}</a>
+        </td>
+        <td class="mono">{{ c.email }}</td>
+        <td>{{ c.phone or '—' }}</td>
+        <td><span class="badge badge-pending">{{ c.orders|length }}</span></td>
+        <td>
+          {% if current_user.is_authenticated and current_user.is_admin() %}
+          <div class="actions">
+            <a
+              href="{{ url_for('edit_customer', id=c.id) }}"
+              class="btn btn-ghost btn-sm"
+              >Edit</a
+            >
+            <form
+              action="{{ url_for('delete_customer', id=c.id) }}"
+              method="POST"
+              onsubmit="return confirm('Delete {{ c.name }}?')">
+              <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+              </button>
+            </form>
+          </div>
+          {% else %}
+          <span class="muted">View only</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="6">No customers yet. Add one!</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

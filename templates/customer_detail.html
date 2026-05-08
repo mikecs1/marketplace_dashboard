@@ -1,0 +1,106 @@
+{% extends 'base.html' %} {% block title %}{{ customer.name }} — OrderBase{%
+endblock %} {% block page_title %}{{ customer.name }}{% endblock %} {% block
+content %}
+<div
+  style="
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+  ">
+  <div class="stat-card yellow" style="min-width: 180px">
+    <div class="stat-label">Total Orders</div>
+    <div class="stat-value">{{ customer.orders|length }}</div>
+  </div>
+  <div class="stat-card green" style="min-width: 180px">
+    <div class="stat-label">Total Spent</div>
+    <div class="stat-value">
+      ${{ "%.0f"|format(customer.orders|sum(attribute='total_price')) }}
+    </div>
+  </div>
+  <div style="margin-left: auto; display: flex; gap: 8px; align-items: center">
+    <a
+      href="{{ url_for('edit_customer', id=customer.id) }}"
+      class="btn btn-ghost"
+      >Edit Customer</a
+    >
+    <a href="{{ url_for('customers') }}" class="btn btn-ghost">← Back</a>
+  </div>
+</div>
+
+<div class="table-card" style="margin-bottom: 20px">
+  <div class="table-header">
+    <span class="table-title">Customer Info</span>
+  </div>
+  <table>
+    <tbody>
+      <tr>
+        <td style="color: var(--muted); width: 140px" class="mono">EMAIL</td>
+        <td>{{ customer.email }}</td>
+      </tr>
+      <tr>
+        <td style="color: var(--muted)" class="mono">PHONE</td>
+        <td>{{ customer.phone or '—' }}</td>
+      </tr>
+      <tr>
+        <td style="color: var(--muted)" class="mono">ID</td>
+        <td class="customer-id">#{{ customer.id }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section-header">
+  <span class="section-title">Orders</span>
+  <a href="{{ url_for('new_order') }}" class="btn btn-primary btn-sm"
+    >+ New Order</a
+  >
+</div>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>#ID</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in customer.orders %}
+      <tr>
+        <td class="customer-id">#{{ order.id }}</td>
+        <td class="mono">{{ order.date }}</td>
+        <td class="price">${{ "%.2f"|format(order.total_price) }}</td>
+        <td>
+          <span class="badge badge-{{ order.status }}">{{ order.status }}</span>
+        </td>
+        <td>
+          <div class="actions">
+            <a
+              href="{{ url_for('edit_order', id=order.id) }}"
+              class="btn btn-ghost btn-sm"
+              >Edit</a
+            >
+            <form
+              action="{{ url_for('delete_order', id=order.id) }}"
+              method="POST"
+              onsubmit="return confirm('Delete order #{{ order.id }}?')">
+              <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="5">No orders for this customer yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

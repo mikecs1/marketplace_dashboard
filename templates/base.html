@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}OrderBase{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">◈</span>
+          <span class="brand-name">OrderBase</span>
+        </div>
+        <nav class="nav">
+          <a
+            href="{{ url_for('index') }}"
+            class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+            <span class="nav-icon">▦</span> Dashboard
+          </a>
+          <a
+            href="{{ url_for('customers') }}"
+            class="nav-item {% if 'customer' in request.endpoint %}active{% endif %}">
+            <span class="nav-icon">◉</span> Customers
+          </a>
+          <a
+            href="{{ url_for('orders') }}"
+            class="nav-item {% if request.endpoint in ['orders', 'new_order', 'edit_order', 'delete_order'] %}active{% endif %}">
+            <span class="nav-icon">◈</span> Orders
+          </a>
+          {% if current_user.is_authenticated and current_user.is_admin() %}
+          <a
+            href="{{ url_for('products') }}"
+            class="nav-item {% if 'product' in request.endpoint %}active{% endif %}">
+            <span class="nav-icon">▣</span> Products
+          </a>
+          <a
+            href="{{ url_for('reports') }}"
+            class="nav-item {% if request.endpoint == 'reports' %}active{% endif %}">
+            <span class="nav-icon">◎</span> Reports
+          </a>
+          {% endif %}
+        </nav>
+        <div class="sidebar-footer">
+          <span class="mono">DBII Project</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <h1 class="page-title">
+            {% block page_title %}Dashboard{% endblock %}
+          </h1>
+          <div class="topbar-user">
+            {% if current_user.is_authenticated %}
+            <span class="user-email">{{ current_user.username }}</span>
+            <form
+              method="POST"
+              action="{{ url_for('logout') }}"
+              style="display: inline">
+              <button type="submit" class="btn btn-ghost btn-small">
+                Logout
+              </button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-ghost btn-small"
+              >Login</a
+            >
+            {% endif %}
+          </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="alerts">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <div class="content">{% block content %}{% endblock %}</div>
+      </main>
+    </div>
+  </body>
+</html>

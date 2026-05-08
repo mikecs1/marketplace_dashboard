@@ -1,0 +1,61 @@
+{% extends 'base.html' %} {% block title %}Dashboard — OrderBase{% endblock %}
+{% block page_title %}Dashboard{% endblock %} {% block content %}
+<div class="user-role-card">
+  <span class="role-label">Your Role:</span>
+  <span class="role-badge role-{{ current_user.role }}">
+    {{ current_user.role.upper() }}
+  </span>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card yellow">
+    <div class="stat-label">Total Customers</div>
+    <div class="stat-value">{{ total_customers }}</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-label">Total Orders</div>
+    <div class="stat-value">{{ total_orders }}</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-label">Total Revenue</div>
+    <div class="stat-value">${{ "%.0f"|format(total_revenue) }}</div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="table-header">
+    <span class="table-title">Recent Orders</span>
+    <a href="{{ url_for('new_order') }}" class="btn btn-primary btn-sm"
+      >+ New Order</a
+    >
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>#ID</th>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in recent_orders %}
+      <tr>
+        <td class="customer-id">#{{ order.id }}</td>
+        <td>{{ order.customer.name }}</td>
+        <td class="mono">{{ order.date }}</td>
+        <td class="price">${{ "%.2f"|format(order.total_price) }}</td>
+        <td>
+          <span class="badge badge-{{ order.status }}">{{ order.status }}</span>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row">
+        <td colspan="5">No orders yet. Add one!</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
