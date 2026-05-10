@@ -7,7 +7,9 @@ import os
 
 app = Flask(__name__)
 
+
 # Database path — works locally and on PythonAnywhere
+# mihnea18.pythonanywhere.com
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "app.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
